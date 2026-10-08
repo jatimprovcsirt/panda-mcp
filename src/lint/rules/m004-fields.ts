@@ -18,6 +18,10 @@ export const IDENTITY_FIELDS: readonly string[] = [
   // Indonesian national identifiers
   "nik", // Nomor Induk Kependudukan
   "nomornik",
+  "ktp", // the physical identity card — holds either the NIK or a photo
+  "noktp",
+  "nomorktp",
+  "kk", // Kartu Keluarga — two characters, see the note on short names
   "nokk", // Nomor Kartu Keluarga
   "nomorkk",
   "kartukeluarga",
@@ -109,6 +113,7 @@ export const SENSITIVE_FIELDS: readonly string[] = [
   "dna",
 
   // Financial
+  "norek", // Nomor Rekening — the everyday abbreviation in Indonesian systems
   "norekening",
   "nomorrekening",
   "rekening",
@@ -146,10 +151,22 @@ export function normaliseFieldName(raw: string): string {
 
 const NORMALISED = new Set(ALL_FIELDS.map(normaliseFieldName));
 
-/** True when a declared field name looks like personal data. */
+/**
+ * True when a declared field name looks like personal data.
+ *
+ * There is deliberately **no minimum length** here. Membership in the curated
+ * list is the check; a length floor on top of it is redundancy that only
+ * causes harm. An earlier version required three characters, which made `kk` —
+ * a real Indonesian field name, and one of the most common — impossible to
+ * match no matter what the list said. The rule would have been dead for that
+ * field with nothing to indicate it.
+ *
+ * Short names are a list-curation concern, not a runtime one: if `kk` is too
+ * risky to match, it belongs out of the list, not behind a silent filter.
+ */
 export function isPersonalDataField(raw: string): boolean {
   const normalised = normaliseFieldName(raw);
-  if (normalised.length < 3) return false;
+  if (normalised.length === 0) return false;
   return NORMALISED.has(normalised);
 }
 
@@ -170,6 +187,14 @@ export function isPersonalDataField(raw: string): boolean {
 //      the relevant sense (a product name, a warehouse address). M004 mitigates
 //      this by only firing when a file declares such a field AND never mentions
 //      PANDA — but the list itself is still the source of most false positives.
+//
+//   3. Short names carry extra collision risk. `kk` (Kartu Keluarga) is two
+//      characters and could plausibly appear as an unrelated abbreviation in a
+//      non-Indonesian codebase. It is kept because it is one of the most common
+//      field names in the systems this tool targets, and because M004's narrow
+//      formulation means a false positive costs a developer one look. If it
+//      proves noisy in practice, remove it from the list rather than adding a
+//      length filter — see the note on `isPersonalDataField`.
 //
 // Review this file before enabling M004 on a real codebase. A rule that cries
 // wolf gets disabled, and this is the rule most likely to do it.

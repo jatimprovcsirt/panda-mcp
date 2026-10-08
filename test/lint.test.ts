@@ -332,6 +332,32 @@ class Product extends Model {
     expect(isPersonalDataField("NIK")).toBe(true);
     expect(isPersonalDataField("sku")).toBe(false);
   });
+
+  it("matches short field names — the length guard is gone", () => {
+    // `kk` is two characters. An earlier version of this module required three,
+    // which made the field impossible to match no matter what the list said.
+    expect(isPersonalDataField("kk")).toBe(true);
+    expect(isPersonalDataField("KK")).toBe(true);
+    expect(isPersonalDataField("ktp")).toBe(true);
+    expect(isPersonalDataField("noktp")).toBe(true);
+    expect(isPersonalDataField("norek")).toBe(true);
+  });
+
+  it("does not match unrelated short tokens", () => {
+    for (const name of ["id", "no", "x", "qty", "sku", "url"]) {
+      expect(isPersonalDataField(name)).toBe(false);
+    }
+  });
+
+  it("fires on kk and norek in a model", () => {
+    const root = project({
+      "app/Models/Keluarga.php": `<?php
+class Keluarga extends Model {
+    protected $fillable = ['kk', 'norek'];
+}`,
+    });
+    expect(rulesFired(root)).toContain("M004");
+  });
 });
 
 describe("M005 database TLS", () => {
