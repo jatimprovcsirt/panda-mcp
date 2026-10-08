@@ -333,14 +333,19 @@ class Product extends Model {
     expect(isPersonalDataField("sku")).toBe(false);
   });
 
-  it("matches short field names — the length guard is gone", () => {
-    // `kk` is two characters. An earlier version of this module required three,
-    // which made the field impossible to match no matter what the list said.
-    expect(isPersonalDataField("kk")).toBe(true);
-    expect(isPersonalDataField("KK")).toBe(true);
-    expect(isPersonalDataField("ktp")).toBe(true);
-    expect(isPersonalDataField("noktp")).toBe(true);
-    expect(isPersonalDataField("norek")).toBe(true);
+  it("matches the identity and financial names added for this domain", () => {
+    for (const name of ["ktp", "noktp", "nomorktp", "nokk", "norek"]) {
+      expect(isPersonalDataField(name)).toBe(true);
+    }
+  });
+
+  it("does not match two-letter names, by choice", () => {
+    // `kk` is deliberately absent from the list: at two characters it collides
+    // with unrelated abbreviations too often to be worth the noise. The longer
+    // spellings cover the same field. Asserted so the decision is visible if
+    // someone later wonders why it does not fire.
+    expect(isPersonalDataField("kk")).toBe(false);
+    expect(isPersonalDataField("nokk")).toBe(true);
   });
 
   it("does not match unrelated short tokens", () => {
@@ -349,11 +354,11 @@ class Product extends Model {
     }
   });
 
-  it("fires on kk and norek in a model", () => {
+  it("fires on ktp and norek in a model", () => {
     const root = project({
       "app/Models/Keluarga.php": `<?php
 class Keluarga extends Model {
-    protected $fillable = ['kk', 'norek'];
+    protected $fillable = ['ktp', 'norek'];
 }`,
     });
     expect(rulesFired(root)).toContain("M004");
