@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Typecheck, guards, build, test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Version agreement
+        run: npm run check:version
+
+      # The central safety property of this package. Fails the build if any
+      # network API, HTTP client, or network transport appears in src/.
+      # See docs/security/VERIFYING.md.
+      - name: No network capability
+        run: npm run check:no-network
+
+      # Build before test: the e2e suite spawns dist/index.js over a real
+      # stdio pipe, and skips itself when dist/ is absent.
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+  # ---------------------------------------------------------------------------
+  # Content freshness is NOT checked here yet.
+  #
+  # `scripts/check-content-freshness.ts` recomputes the bundle from the source
+  # repositories and fails if the committed content has drifted. It needs those
+  # repositories available at PANDA_SOURCE_ROOT.
+  #
+  # Five of the six sources are public and could be checked out here:
+  #   panda-spec, panda-php, panda-node, panda-go, panda-py
+  #
+  # The sixth cannot. The cross-cutting guides currently live in a `docs/`
+  # directory with **no git remote**, so CI has nothing to fetch. Adding this
+  # job today would leave it permanently red, and a permanently red check is
+  # one people learn to ignore.
+  #
+  # Unblocked by: giving that directory a public remote (or moving its content
+  # into a repository that has one), then setting the `repo`/`path` mapping in
+  # scripts/build-content.ts accordingly.
+  #
+  # Until then the check runs locally and is expected before a release:
+  #   PANDA_SOURCE_ROOT=/path/to/panda npm run check:content
+  #
+  # Tracked in todo/006-Phase-Epic-Todo-Panda-Portal-Docs.md (TP0.1.1) and
+  # PRD 006 open item on the canonical home of the orphaned guides.
+  # ---------------------------------------------------------------------------

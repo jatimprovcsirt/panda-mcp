@@ -1,0 +1,15 @@
+# Normalise line endings to LF in the repository.
+#
+# Without this, Windows checkouts get CRLF, and the working tree differs from
+# the committed blob. That matters more than usual here: the content bundle is
+# compared byte-for-byte by check-content-freshness, so line-ending drift would
+# produce a check that passes on one machine and fails on another.
+* text=auto eol=lf
+
+# Generated content is compared exactly. Never let a filter touch it.
+src/content/generated.ts -text
+
+# Binary-ish assets
+*.png binary
+*.jpg binary
+*.ico binary
