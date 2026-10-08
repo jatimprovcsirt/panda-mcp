@@ -9,7 +9,10 @@
  * never disagree — a checker that reimplements the thing it checks is a
  * checker that will eventually be wrong.
  *
- * `generatedAt` is ignored: it necessarily differs on every build.
+ * `generatedAt` is ignored. It is not a content signal — the generator
+ * preserves it when the content is unchanged, so comparing it would be
+ * comparing a field that is deliberately stable, and a checkout that never
+ * ran the generator would otherwise look stale.
  *
  * Run via `npm run check:content`. Wired into CI.
  */

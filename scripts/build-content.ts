@@ -325,20 +325,53 @@ export const content: ContentBundle = ${JSON.stringify(bundle, null, 2)};
 
 export const GENERATED_PATH = "src/content/generated.ts";
 
-function write(bundle: ContentBundle): void {
+const GENERATED_AT_PATTERN = /"generatedAt": "([^"]+)"/;
+
+/**
+ * Write the bundle, preserving the previous timestamp when nothing changed.
+ *
+ * The naive version stamped `Date.now()` on every build, which meant every
+ * regeneration dirtied the working tree even when no content had moved. That
+ * makes `git diff --exit-code` useless as a freshness check and puts a
+ * meaningless one-line change in unrelated commits.
+ *
+ * Preserving the timestamp also makes the field more useful. "When was this
+ * content last changed" is the question a reader actually has — how stale is
+ * the documentation in front of me. "When did someone last run the build" is
+ * not.
+ *
+ * Returns true if the file was written.
+ */
+function write(bundle: ContentBundle): boolean {
   const outDir = resolve(REPO_ROOT, "src/content");
   mkdirSync(outDir, { recursive: true });
 
   const outFile = join(outDir, "generated.ts");
+  const existing = existsSync(outFile) ? readFileSync(outFile, "utf8") : undefined;
+  const previousStamp = existing ? GENERATED_AT_PATTERN.exec(existing)?.[1] : undefined;
+
+  // Re-render with the previous timestamp. If that reproduces the existing
+  // file byte for byte, the content is unchanged and there is nothing to do.
+  if (previousStamp !== undefined) {
+    const candidate = renderBundle({ ...bundle, generatedAt: previousStamp });
+    if (candidate === existing) {
+      process.stderr.write(
+        `[build-content] ${bundle.sections.length} sections unchanged — ` +
+          `content last modified ${previousStamp}\n`,
+      );
+      return false;
+    }
+  }
+
   writeFileSync(outFile, renderBundle(bundle), "utf8");
 
   const bytes = bundle.sections.reduce((n, s) => n + s.body.length, 0);
   process.stderr.write(
     `[build-content] ${bundle.sections.length} sections, ${(bytes / 1024).toFixed(1)} KB ` +
-      `from ${sourceRoot()}
-[build-content] wrote ${relative(REPO_ROOT, outFile)}
-`,
+      `from ${sourceRoot()}\n` +
+      `[build-content] wrote ${relative(REPO_ROOT, outFile)} (${bundle.generatedAt})\n`,
   );
+  return true;
 }
 
 /** True when this module is the process entry point rather than an import. */
