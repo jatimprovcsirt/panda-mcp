@@ -10,6 +10,7 @@
   "main": "dist/index.js",
   "files": [
     "dist",
+    "docs",
     "README.md",
     "LICENSE"
   ],
@@ -37,7 +38,8 @@
     "typecheck": "tsc --noEmit",
     "check:no-network": "tsx scripts/check-no-network.ts",
     "check:content": "tsx scripts/check-content-freshness.ts",
-    "check:version": "tsx scripts/check-version.ts"
+    "check:version": "tsx scripts/check-version.ts",
+    "prepublishOnly": "npm run check:version && npm run check:no-network && npm run typecheck && npm run build && npm test"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",

@@ -1,0 +1,105 @@
+name: Release
+
+# Triggered by a version tag, e.g. `git tag v0.1.0 && git push origin v0.1.0`.
+#
+# The tag is the release record. Everything below exists to make sure the
+# thing that reaches npm is the thing that was tagged, tested, and verified as
+# an installable package — not merely something that worked in the repo.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  # Required for npm provenance: it lets the registry verify which workflow,
+  # commit, and repository produced the artifact.
+  id-token: write
+
+jobs:
+  publish:
+    name: Verify and publish to npm
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          registry-url: "https://registry.npmjs.org"
+
+      - run: npm ci
+
+      # A tag that says v0.2.0 while package.json says 0.1.0 publishes the
+      # wrong version under the right name, and nobody notices until someone
+      # installs a version that is not what the tag promised.
+      - name: Tag matches package version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::tag is v$TAG but package.json says $PKG"
+            exit 1
+          fi
+          echo "tag and package version agree: $PKG"
+
+      - name: Reported version matches package.json
+        run: npm run check:version
+
+      # The central safety property. A release must not be the first place a
+      # network call appears.
+      - name: No network capability
+        run: npm run check:no-network
+
+      - run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      # The step that catches "works in the repo, broken as a package": a
+      # missing file in `files`, a bad `bin` path, a shebang lost in bundling.
+      # None of those are visible from inside the repository.
+      - name: Pack and install the tarball, then speak MCP to it
+        run: |
+          set -euo pipefail
+          npm pack --pack-destination /tmp
+          TGZ="$(ls /tmp/jatimprovcsirt-panda-mcp-*.tgz)"
+
+          mkdir -p /tmp/consumer && cd /tmp/consumer
+          npm init -y >/dev/null
+          npm install --no-audit --no-fund "$TGZ"
+
+          echo "--- version ---"
+          ./node_modules/.bin/panda-mcp --version
+
+          echo "--- handshake over stdio ---"
+          printf '%s\n%s\n' \
+            '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}' \
+            '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
+            | ./node_modules/.bin/panda-mcp --docs-only 2>/dev/null > /tmp/out.jsonl
+
+          node -e '
+            const fs = require("fs");
+            const lines = fs.readFileSync("/tmp/out.jsonl", "utf8").trim().split("\n");
+            const reply = lines.map((l) => JSON.parse(l)).find((m) => m.id === 2);
+            if (!reply) { console.error("no tools/list reply"); process.exit(1); }
+            const names = reply.result.tools.map((t) => t.name);
+            const forbidden = ["encrypt", "decrypt", "decrypt_raw", "mask", "blind_index", "unmask"];
+            for (const bad of forbidden) {
+              if (names.some((n) => n.toLowerCase() === bad)) {
+                console.error("a cryptographic operation is exposed: " + bad);
+                process.exit(1);
+              }
+            }
+            console.log("installed package exposes " + names.length + " tools, none cryptographic");
+          '
+
+      - name: Publish
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
