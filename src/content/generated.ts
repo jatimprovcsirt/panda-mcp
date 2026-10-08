@@ -7,7 +7,7 @@
 import type { ContentBundle } from "./types.js";
 
 export const content: ContentBundle = {
-  "generatedAt": "2026-10-08T08:33:05.831Z",
+  "generatedAt": "2026-10-08T08:38:02.713Z",
   "sdkVersions": {
     "panda-docs": "unknown",
     "panda-spec": "a689ffd",
@@ -102,6 +102,17 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-spec",
         "path": "envelope-format.md",
+        "commit": "a689ffd"
+      }
+    },
+    {
+      "slug": "test-vectors",
+      "title": "Cross-language Test Vectors",
+      "stacks": [],
+      "body": "```json\n{\n  \"positive\": [\n    {\n      \"description\": \"basic NIK\",\n      \"key\": \"dGhpc2lzYXNlY3JldGtleW9mMzJieXRlc2xlbmd0aCE=\",\n      \"kid\": \"test-key-1\",\n      \"nonce\": \"MTIzNDU2Nzg5MDEy\",\n      \"plaintext\": \"3201012501990001\",\n      \"envelope\": {\n        \"v\": 1,\n        \"alg\": \"aes-256-gcm\",\n        \"kid\": \"test-key-1\",\n        \"nonce\": \"MTIzNDU2Nzg5MDEy\",\n        \"ciphertext\": \"npRoRGinyy8YSsdNErGBOFwYHJbf2DO8RBkwo3mQ1EQ=\"\n      }\n    },\n    {\n      \"description\": \"standard ASCII\",\n      \"key\": \"dGhpc2lzYXNlY3JldGtleW9mMzJieXRlc2xlbmd0aCE=\",\n      \"kid\": \"test-key-1\",\n      \"nonce\": \"MTIzNDU2Nzg5MDEy\",\n      \"plaintext\": \"hello world\",\n      \"envelope\": {\n        \"v\": 1,\n        \"alg\": \"aes-256-gcm\",\n        \"kid\": \"test-key-1\",\n        \"nonce\": \"MTIzNDU2Nzg5MDEy\",\n        \"ciphertext\": \"xcM0GTe2jnVaF5r9bLFa32iJqAoKQARijHV7\"\n      }\n    },\n    {\n      \"description\": \"multibyte UTF-8\",\n      \"key\": \"dGhpc2lzYXNlY3JldGtleW9mMzJieXRlc2xlbmd0aCE=\",\n      \"kid\": \"test-key-1\",\n      \"nonce\": \"MTIzNDU2Nzg5MDEy\",\n      \"plaintext\": \"Budi Luhur 🇮🇩\",\n      \"envelope\": {\n        \"v\": 1,\n        \"alg\": \"aes-256-gcm\",\n        \"kid\": \"test-key-1\",\n        \"nonce\": \"MTIzNDU2Nzg5MDEy\",\n        \"ciphertext\": \"79M8HHjajHJdCd6EvQYf+dc4pihPf2swwNjYVT4FXYGoGy8=\"\n      }\n    },\n    {\n      \"description\": \"empty string\",\n      \"key\": \"dGhpc2lzYXNlY3JldGtleW9mMzJieXRlc2xlbmd0aCE=\",\n      \"kid\": \"test-key-1\",\n      \"nonce\": \"MTIzNDU2Nzg5MDEy\",\n      \"plaintext\": \"\",\n      \"envelope\": {\n        \"v\": 1,\n        \"alg\": \"aes-256-gcm\",\n        \"kid\": \"test-key-1\",\n        \"nonce\": \"MTIzNDU2Nzg5MDEy\",\n        \"ciphertext\": \"VEZ/Mi7tC5vDbZkWG6DvHg==\"\n      }\n    }\n  ],\n  \"negative\": [\n    {\n      \"description\": \"tampered tag\",\n      \"key\": \"dGhpc2lzYXNlY3JldGtleW9mMzJieXRlc2xlbmd0aCE=\",\n      \"kid\": \"test-key-1\",\n      \"envelope\": {\n        \"v\": 1,\n        \"alg\": \"aes-256-gcm\",\n        \"kid\": \"test-key-1\",\n        \"nonce\": \"MTIzNDU2Nzg5MDEy\",\n        \"ciphertext\": \"xcM0GTe2jnVaF5r9bLFa32iJqAoKQARijHWE\"\n      },\n      \"expected_error\": \"AuthenticationFailed\"\n    },\n    {\n      \"description\": \"invalid version\",\n      \"key\": \"dGhpc2lzYXNlY3JldGtleW9mMzJieXRlc2xlbmd0aCE=\",\n      \"kid\": \"test-key-1\",\n      \"envelope\": {\n        \"v\": 99,\n        \"alg\": \"aes-256-gcm\",\n        \"kid\": \"test-key-1\",\n        \"nonce\": \"MTIzNDU2Nzg5MDEy\",\n        \"ciphertext\": \"xcM0GTe2jnVaF5r9bLFa32iJqAoKQARijHV7\"\n      },\n      \"expected_error\": \"UnsupportedEnvelopeVersion\"\n    },\n    {\n      \"description\": \"invalid algorithm\",\n      \"key\": \"dGhpc2lzYXNlY3JldGtleW9mMzJieXRlc2xlbmd0aCE=\",\n      \"kid\": \"test-key-1\",\n      \"envelope\": {\n        \"v\": 1,\n        \"alg\": \"aes-128-cbc\",\n        \"kid\": \"test-key-1\",\n        \"nonce\": \"MTIzNDU2Nzg5MDEy\",\n        \"ciphertext\": \"xcM0GTe2jnVaF5r9bLFa32iJqAoKQARijHV7\"\n      },\n      \"expected_error\": \"UnsupportedAlgorithm\"\n    },\n    {\n      \"description\": \"invalid nonce length\",\n      \"key\": \"dGhpc2lzYXNlY3JldGtleW9mMzJieXRlc2xlbmd0aCE=\",\n      \"kid\": \"test-key-1\",\n      \"envelope\": {\n        \"v\": 1,\n        \"alg\": \"aes-256-gcm\",\n        \"kid\": \"test-key-1\",\n        \"nonce\": \"MTIzNDU2Nzg5MDEyMzQ1Ng==\",\n        \"ciphertext\": \"xcM0GTe2jnVaF5r9bLFa32iJqAoKQARijHV7\"\n      },\n      \"expected_error\": \"MalformedEnvelope\"\n    }\n  ]\n}\n```\n",
+      "source": {
+        "repo": "panda-spec",
+        "path": "vectors/vectors.json",
         "commit": "a689ffd"
       }
     },

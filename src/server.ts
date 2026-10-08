@@ -10,6 +10,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 import { resolveCapabilities } from "./capabilities.js";
 import type { CliOptions } from "./cli.js";
+import { registerPrompts } from "./prompts.js";
+import { registerResources } from "./resources.js";
 import { registerDocTools } from "./tools/docs.js";
 import { registerInfoTools } from "./tools/info.js";
 import { VERSION } from "./version.js";
@@ -45,6 +47,12 @@ export function createServer(options: CliOptions): McpServer {
 
   registerDocTools(server);
   registerInfoTools(server, ctx);
+
+  // Resources and prompts are documentation-side and therefore always
+  // available — including under --docs-only, which withholds only the tools
+  // that read local files.
+  registerResources(server);
+  registerPrompts(server);
 
   // Tier 2 tools (validate_implementation, explain_envelope,
   // scaffold_integration) are registered here once implemented — Phase 3 and 4.

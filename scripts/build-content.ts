@@ -69,6 +69,12 @@ interface SourceSpec {
   readonly repo: PublicRepo;
   /** Path inside the repository. */
   readonly path: string;
+  /**
+   * How to present the source. Markdown passes through; JSON is fenced so a
+   * machine-readable file renders as a readable code block rather than a wall
+   * of text.
+   */
+  readonly format?: "markdown" | "json";
 }
 
 /**
@@ -135,6 +141,14 @@ const SOURCES: readonly SourceSpec[] = [
     stacks: [],
     repo: "panda-spec",
     path: "envelope-format.md",
+  },
+  {
+    slug: "test-vectors",
+    title: "Cross-language Test Vectors",
+    stacks: [],
+    repo: "panda-spec",
+    path: "vectors/vectors.json",
+    format: "json",
   },
   {
     slug: "php",
@@ -212,6 +226,27 @@ function readCommit(repoDir: string): string {
   }
 }
 
+/**
+ * Normalise a source file into documentation body text.
+ *
+ * Line endings are normalised first. Source repositories are edited on Windows
+ * and Linux alike, and git checks them out with whatever the local convention
+ * is. Embedding raw CRLF would make the output depend on the machine that ran
+ * the build, so `check:content` would pass on a Windows checkout and fail on a
+ * Linux CI runner for a bundle that is semantically identical.
+ */
+function present(raw: string, format: SourceSpec["format"] = "markdown"): string {
+  const normalised = raw.replace(/\r\n/g, "\n");
+
+  // A JSON file embedded raw reads as a wall of text. Fencing it makes it
+  // legible in the same rendering path as the markdown sources.
+  if (format === "json") {
+    return "```json\n" + normalised.trimEnd() + "\n```\n";
+  }
+
+  return normalised;
+}
+
 function collect(root: string): DocSection[] {
   const sections: DocSection[] = [];
   const missing: string[] = [];
@@ -231,14 +266,7 @@ function collect(root: string): DocSection[] {
       slug: spec.slug,
       title: spec.title,
       stacks: spec.stacks,
-      // Normalise line endings before embedding.
-      //
-      // Source repositories are edited on Windows and Linux alike, and git
-      // checks them out with whatever the local convention is. Embedding raw
-      // CRLF would make the output depend on the machine that ran the build,
-      // so `check:content` would pass on a Windows checkout and fail on a
-      // Linux CI runner for a bundle that is semantically identical.
-      body: readFileSync(absPath, "utf8").replace(/\r\n/g, "\n"),
+      body: present(readFileSync(absPath, "utf8"), spec.format),
       source: {
         repo: spec.repo,
         path: spec.path,
