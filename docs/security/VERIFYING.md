@@ -2,7 +2,7 @@
 
 The README makes five claims. This document explains how to check each one yourself, rather than taking them on trust.
 
-> This server reads files under the project root you configure. It writes only after you approve. It makes no network requests. It never holds, reads, requests, or has access to an encryption key. It performs no cryptographic operation.
+> This server reads files under the project root you configure. It never writes any file. It makes no network requests. It never holds, reads, requests, or has access to an encryption key. It performs no cryptographic operation.
 
 If any claim below does not hold for the version you have, that is a security bug. Please report it — see [`SECURITY.md`](./SECURITY.md).
 
@@ -107,19 +107,36 @@ panda-mcp --docs-only
 
 ---
 
-## 5. "It writes only after you approve"
+## 5. "It never writes any file"
 
-**In `--docs-only` mode it never writes at all** — the writing tool is not registered.
+This claim is stronger than the one it replaced. An earlier design had
+`scaffold_integration` write files after a confirmation step; it now returns a
+proposal and the assistant writes the files with its own tools. So the write
+goes through the client's approval flow, and this server needs no write
+capability at all.
 
-**In full mode**, `scaffold_integration` proposes changes and requests confirmation before writing. `validate_implementation` is read-only unconditionally: search for a write call in its implementation.
+**Grep the whole source for write APIs.**
 
 ```bash
-grep -rn "writeFile\|appendFile\|createWriteStream\|mkdir\|rmdir\|unlink" src/tools/validate.ts
+grep -rn "writeFile\|appendFile\|createWriteStream\|mkdirSync\|rmSync\|unlink\|rename" src/
 ```
 
-Expected: no output.
+Expected: matches only in `scripts/build-content.ts`, which runs at build time
+on a developer or CI machine and is not part of the published server. If a
+match appears under `src/tools/` or `src/lint/`, the claim is false.
 
-**Test coverage.** `test/scaffold/confirm.test.ts` asserts that no write occurs without confirmation, in every path — including the conflict path, where a file changed since it was read.
+A subtler check — a write could also arrive through a dependency. The
+dependency tree is `@modelcontextprotocol/sdk` and `zod`; neither writes to
+your project.
+
+**Test coverage.** `test/scaffold.test.ts` snapshots the directory tree and the
+mtime of an existing file, runs `scaffold_integration` for every templated
+stack, and asserts both are unchanged. The test is deliberately structural
+rather than a mock assertion: it checks the filesystem, not a spy.
+
+**What this does not cover.** Your assistant can still write files with its own
+tools — that is the design. Those writes go through your client's permission
+prompts, not through this server.
 
 ---
 

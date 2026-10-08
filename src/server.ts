@@ -15,6 +15,7 @@ import { registerResources } from "./resources.js";
 import { registerDocTools } from "./tools/docs.js";
 import { registerExplainEnvelopeTool } from "./tools/explain-envelope.js";
 import { registerInfoTools } from "./tools/info.js";
+import { registerScaffoldTool } from "./tools/scaffold.js";
 import { registerValidateTool } from "./tools/validate.js";
 import { VERSION } from "./version.js";
 
@@ -57,13 +58,10 @@ export function createServer(options: CliOptions): McpServer {
   registerPrompts(server);
 
   // Tier 2 — reads local files, so gated behind --docs-only.
-  //
-  // `scaffold_integration` (Phase 4) is still absent rather than stubbed: a
-  // tool that exists and returns "not implemented" is worse than no tool,
-  // because a model will call it and then work around the failure.
   if (isTier2Enabled(options.docsOnly)) {
     registerValidateTool(server, ctx);
     registerExplainEnvelopeTool(server);
+    registerScaffoldTool(server, ctx);
   }
 
   return server;

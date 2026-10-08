@@ -69,6 +69,6 @@ export function isTier2Enabled(docsOnly: boolean): boolean {
  */
 export const CAPABILITY_STATEMENT =
   "This server reads files under the project root you configure. " +
-  "It writes only after you approve. It makes no network requests. " +
+  "It never writes any file. It makes no network requests. " +
   "It never holds, reads, requests, or has access to an encryption key. " +
   "It performs no cryptographic operation.";

@@ -23,10 +23,10 @@ This server has an unusually narrow surface, which makes the interesting failure
 | **Critical** | Any cryptographic operation becomes reachable — an `encrypt`, `decrypt`, `mask`, or `blind_index` tool appears in any configuration |
 | **Critical** | The server reads, requests, or stores encryption key material |
 | **Critical** | The server makes a network request, or a network transport is imported |
+| **Critical** | The server writes any file. It proposes; the client writes. |
 | **High** | A tool reads outside the configured project root, including via symlink escape |
 | **High** | A finding, log line, or error message contains a matched value from scanned source |
 | **High** | `--docs-only` fails to withhold a Tier 2 tool |
-| **Medium** | A write occurs without explicit confirmation |
 | **Medium** | `.env` files are scanned without `--include-env` |
 | **Low** | Bundled documentation is stale relative to its sources |
 

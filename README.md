@@ -8,7 +8,7 @@ PANDA is new and niche. Large language models have never seen it, so when a deve
 
 ## What this server can see
 
-> **This server reads files under the project root you configure. It writes only after you approve. It makes no network requests. It never holds, reads, requests, or has access to an encryption key. It performs no cryptographic operation.**
+> **This server reads files under the project root you configure. It never writes any file. It makes no network requests. It never holds, reads, requests, or has access to an encryption key. It performs no cryptographic operation.**
 
 Every clause is verifiable by reading the source, and `docs/security/VERIFYING.md` explains how to check each one. The repository is public specifically so that this is possible — asking you to run a closed-source tool over your codebase while assuring you it is safe would be the wrong way round.
 
@@ -90,7 +90,7 @@ Every response carries a citation (`repo/path@commit`), so a wrong answer is tra
 |---|---|
 | `validate_implementation` | Static analysis — read-only, never modifies files |
 | `explain_envelope` | Envelope metadata and structural validity. Does not decrypt; the server has no key. |
-| `scaffold_integration` | Generate an integration, writing only after you approve |
+| `scaffold_integration` | Propose an integration — a migration, the framework wiring, and configuration. **Returns the files; writes nothing.** |
 
 Tier 2 tools are **not registered** under `--docs-only`. This is not cosmetic: a model cannot call a tool that was never registered, so the flag is a real reduction in what the server can reach.
 

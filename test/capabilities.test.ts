@@ -71,11 +71,21 @@ describe("excluded capabilities are absent by construction (PRD FR-M25/26)", () 
 });
 
 describe("capability statement (PRD FR-M28)", () => {
-  it("states the four claims a reader can verify", () => {
+  it("states the claims a reader can verify", () => {
     expect(CAPABILITY_STATEMENT).toMatch(/reads files under the project root/i);
-    expect(CAPABILITY_STATEMENT).toMatch(/writes only after you approve/i);
     expect(CAPABILITY_STATEMENT).toMatch(/makes no network requests/i);
-    expect(CAPABILITY_STATEMENT).toMatch(/never holds, reads, requests, or has access to an encryption key/i);
+    expect(CAPABILITY_STATEMENT).toMatch(
+      /never holds, reads, requests, or has access to an encryption key/i,
+    );
+  });
+
+  it("claims it never writes, not merely that it asks first", () => {
+    // "Writes only after you approve" is a behaviour to be trusted; "never
+    // writes" is a structural property. The scaffold generator is the reason
+    // this matters — it proposes files rather than creating them, so the write
+    // goes through the client's own approval flow.
+    expect(CAPABILITY_STATEMENT).toMatch(/never writes/i);
+    expect(CAPABILITY_STATEMENT).not.toMatch(/writes only after/i);
   });
 
   it("states that no cryptographic operation is performed", () => {
