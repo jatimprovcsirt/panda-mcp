@@ -8,12 +8,14 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-import { resolveCapabilities } from "./capabilities.js";
+import { isTier2Enabled, resolveCapabilities } from "./capabilities.js";
 import type { CliOptions } from "./cli.js";
 import { registerPrompts } from "./prompts.js";
 import { registerResources } from "./resources.js";
 import { registerDocTools } from "./tools/docs.js";
+import { registerExplainEnvelopeTool } from "./tools/explain-envelope.js";
 import { registerInfoTools } from "./tools/info.js";
+import { registerValidateTool } from "./tools/validate.js";
 import { VERSION } from "./version.js";
 
 export const SERVER_NAME = "panda-mcp";
@@ -54,11 +56,15 @@ export function createServer(options: CliOptions): McpServer {
   registerResources(server);
   registerPrompts(server);
 
-  // Tier 2 tools (validate_implementation, explain_envelope,
-  // scaffold_integration) are registered here once implemented — Phase 3 and 4.
-  // They are deliberately absent rather than stubbed: a tool that exists and
-  // returns "not implemented" is worse than no tool, because a model will
-  // call it and then work around the failure.
+  // Tier 2 — reads local files, so gated behind --docs-only.
+  //
+  // `scaffold_integration` (Phase 4) is still absent rather than stubbed: a
+  // tool that exists and returns "not implemented" is worse than no tool,
+  // because a model will call it and then work around the failure.
+  if (isTier2Enabled(options.docsOnly)) {
+    registerValidateTool(server, ctx);
+    registerExplainEnvelopeTool(server);
+  }
 
   return server;
 }
