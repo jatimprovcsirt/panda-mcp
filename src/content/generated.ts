@@ -7,14 +7,14 @@
 import type { ContentBundle } from "./types.js";
 
 export const content: ContentBundle = {
-  "generatedAt": "2026-10-08T08:38:02.713Z",
+  "generatedAt": "2026-10-09T08:35:42.276Z",
   "sdkVersions": {
     "panda-docs": "unknown",
-    "panda-spec": "a689ffd",
-    "panda-php": "75821d3",
-    "panda-node": "b5883b6",
-    "panda-go": "e8718dd",
-    "panda-py": "4dd3bfc"
+    "panda-spec": "unknown",
+    "panda-php": "0.5.0",
+    "panda-node": "0.5.0",
+    "panda-go": "0.5.0",
+    "panda-py": "0.2.0"
   },
   "sections": [
     {

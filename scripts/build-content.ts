@@ -212,6 +212,44 @@ function assertPublicRepo(root: string, repo: PublicRepo, absPath: string): void
   }
 }
 
+/**
+ * The repository's current release version.
+ *
+ * Prefers the nearest git tag over a manifest field, because the two disagree
+ * in practice: Composer's `version` is usually absent (Packagist derives it
+ * from tags), and Go modules carry no version in `go.mod` at all. The tag is
+ * the thing a consumer actually installs by.
+ *
+ * Falls back to the manifest, then to "unknown". "unknown" is recorded rather
+ * than guessed — a wrong version in the bundle is worse than an absent one,
+ * because it makes the version check silently useless.
+ */
+function readVersion(repoDir: string): string {
+  try {
+    const tag = execFileSync("git", ["describe", "--tags", "--abbrev=0"], {
+      cwd: repoDir,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    if (tag) return tag.replace(/^v/, "");
+  } catch {
+    // No tags, or not a git checkout.
+  }
+
+  for (const [file, pattern] of [
+    ["package.json", /"version"\s*:\s*"([^"]+)"/],
+    ["composer.json", /"version"\s*:\s*"([^"]+)"/],
+    ["pyproject.toml", /^version\s*=\s*"([^"]+)"/m],
+  ] as const) {
+    const path = resolve(repoDir, file);
+    if (!existsSync(path)) continue;
+    const match = pattern.exec(readFileSync(path, "utf8"));
+    if (match?.[1]) return match[1];
+  }
+
+  return "unknown";
+}
+
 function readCommit(repoDir: string): string {
   try {
     return execFileSync("git", ["rev-parse", "--short", "HEAD"], {
@@ -299,10 +337,12 @@ export function buildBundle(root: string = sourceRoot()): ContentBundle {
 
   return {
     generatedAt: new Date().toISOString(),
+    // Release version per repository, not the commit — a consumer installs a
+    // version, and M011 has to compare it against something comparable.
     sdkVersions: Object.fromEntries(
       [...new Set(sections.map((s) => s.source.repo))].map((repo) => [
         repo,
-        sections.find((s) => s.source.repo === repo)?.source.commit ?? "unknown",
+        readVersion(repoDir(root, repo as PublicRepo)),
       ]),
     ),
     sections,

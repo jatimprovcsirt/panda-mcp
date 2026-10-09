@@ -95,6 +95,44 @@ export interface RuleMatch {
   readonly message?: string;
 }
 
+/**
+ * A rule that needs the whole project rather than one file.
+ *
+ * Some questions cannot be answered from a single file: "is audit logging
+ * configured anywhere?" and "does the installed SDK version match the
+ * documentation bundled here?" are both about the project as a whole. A
+ * file-scoped rule trying to answer them would fire on whichever file
+ * happened to be scanned first, which is both wrong and unreproducible.
+ */
+export interface ProjectContext {
+  readonly root: string;
+  readonly stack: Stack | null;
+  readonly files: readonly ScanFile[];
+  /** Suppression index per file, keyed by relative path. */
+  readonly suppressions: ReadonlyMap<string, { appliesAt(line: number, rule: string): boolean }>;
+}
+
+export interface ProjectMatch {
+  readonly file: string;
+  readonly line: number;
+  /** MUST NOT contain matched source text. See Finding. */
+  readonly message?: string;
+}
+
+export interface ProjectRule {
+  readonly id: string;
+  readonly severity: Severity;
+  readonly title: string;
+  readonly description: string;
+  readonly remediation: string;
+  readonly docsUrl: string;
+  /** Skip the project entirely when this is false — keeps a rule from
+   *  reporting "no audit logging" in a repository that has never heard of
+   *  PANDA. */
+  appliesTo(project: ProjectContext): boolean;
+  check(project: ProjectContext): ProjectMatch[];
+}
+
 export interface SkippedFile {
   readonly path: string;
   readonly reason: string;

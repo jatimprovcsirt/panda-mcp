@@ -18,7 +18,7 @@ import { join, posix, relative, resolve, sep, dirname } from "node:path";
 import { detectStack } from "./detect-stack.js";
 import type { ScanContext, ScanFile, ScanReport, SkippedFile } from "./types.js";
 import { buildSuppressionIndex } from "./suppression.js";
-import { RULES } from "./registry.js";
+import { PROJECT_RULES, RULES } from "./registry.js";
 
 /** Directories that are never worth walking. Matched exactly. */
 const IGNORED_DIRECTORIES = new Set([
@@ -86,6 +86,14 @@ const SCANNABLE_EXTENSIONS = new Set([
   ".conf",
   ".properties",
   ".xml",
+
+  // Schema. `.sql` matters more than its absence suggests: migrations are
+  // where column types are decided, so a rule about column sizing that never
+  // reads a migration is a rule that never fires. Discovered exactly that way
+  // — M010 passed its tests only against framed snippets, not real files.
+  ".sql",
+  ".tf",
+  ".hcl",
 ]);
 
 /**
@@ -329,6 +337,36 @@ export function scan(root: string, options: { includeEnv: boolean }): ScanReport
     }
 
     if (ran) rulesRun.push(rule.id);
+  }
+
+  // Project-level rules run last, once every file has been read. They ask
+  // questions a single file cannot answer — "is auditing configured anywhere",
+  // "does the installed SDK match the bundled docs" — and answering them
+  // per-file would make the result depend on directory order.
+  if (state.files.length > 0) {
+    const suppressions = new Map(
+      state.files.map((f) => [f.relPath, buildSuppressionIndex(f.content)] as const),
+    );
+    const projectCtx = { ...ctx, files: state.files, suppressions };
+
+    for (const rule of PROJECT_RULES) {
+      if (!rule.appliesTo(projectCtx)) continue;
+      rulesRun.push(rule.id);
+
+      for (const match of rule.check(projectCtx)) {
+        const line = match.line > 0 ? match.line : 1;
+        findings.push({
+          rule: rule.id,
+          severity: rule.severity,
+          file: match.file,
+          line,
+          message: match.message ?? rule.description,
+          remediation: rule.remediation,
+          docsUrl: rule.docsUrl,
+          ...(suppressions.get(match.file)?.appliesAt(line, rule.id) ? { suppressed: true } : {}),
+        });
+      }
+    }
   }
 
   return {
