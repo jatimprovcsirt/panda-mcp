@@ -49,7 +49,40 @@ copy of it.
 
 | Version | Date | Commit | What it was |
 |---|---|---|---|
+| `v0.1.1` | 2026-10-14 | — | M003 could not see a 64-character demo token; the bundled documentation had gone stale against all four SDKs. Relicensed to Apache-2.0 and published with OIDC instead of a token. |
 | `v0.1.0` | 2026-10-12 | `8507e46` | First release. Documentation and validation server for AI coding assistants: documentation search, integration scaffolding, and eleven lint rules (M001–M011). Performs no cryptographic operation and holds no key. |
+
+## The documentation bundle had gone stale
+
+`npm run check:content` failed on the way to 0.1.1: every one of the six
+sources it tracks had moved since the bundle was last built.
+
+    ✗ envelope-format: source revision changed dd13dce → 6d2c079
+    ✗ go:              source revision changed 8adad6d → 5835120
+    ✗ node:            source revision changed 29075f0 → 01ce148
+    ✗ php:             source revision changed e2573c8 → 5bbc044
+    ✗ python:          source revision changed 45640c4 → bd9f2d0
+
+That check exists precisely because this package's output is *text about the
+SDKs*, and text does not fail to compile when the thing it describes changes.
+A stale bundle is a server that answers confidently and wrongly, which is worse
+than one that errors.
+
+**Nothing was enforcing it.** `ci.yml` documents why it cannot run there: five
+of the six sources are public and could be checked out, but the sixth — the
+cross-cutting guides in `docs/` — has no git remote, so the job would be
+permanently red, and a permanently red check is one people learn to ignore.
+That reasoning is sound. The consequence is that `check:content` is a step a
+human is *expected* to run before a release, stated in a comment inside a
+workflow file, and the release workflow does not run it either. So it went
+stale across the relicence and four SDK commits and nothing said so.
+
+Regenerating is part of this release. Whether the release workflow should run
+the check is a real question and not an obvious one: it would have caught this
+a release earlier, but it would also let a documentation commit in any of four
+other repositories block publishing this one, and only on a machine where all
+six are checked out — which is not the runner. Left as it is, but now written
+down where the next person will look.
 
 ## The 0.1.0 tag was added afterwards
 
@@ -84,7 +117,9 @@ Unlike PyPI, npm allows a version to be unpublished and republished. Resist it:
 the fix for a wrong number is a new number, because anything already installed
 from the old one does not change.
 
-## Unreleased — M003 missed the longer demo token
+## What 0.1.1 fixes
+
+### M003 missed the longer demo token
 
 The M003 rule finds the static demo token in a non-development configuration.
 It matched `panda_demo_[a-f0-9]{48}` — 48 only — so a 64-character demo token

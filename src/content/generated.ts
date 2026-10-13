@@ -7,12 +7,12 @@
 import type { ContentBundle } from "./types.js";
 
 export const content: ContentBundle = {
-  "generatedAt": "2026-10-13T15:41:49.318Z",
+  "generatedAt": "2026-10-13T17:57:35.727Z",
   "sdkVersions": {
     "panda-docs": "unknown",
     "panda-spec": "2",
     "panda-php": "0.2.2",
-    "panda-node": "0.5.2",
+    "panda-node": "0.5.4",
     "panda-go": "0.5.1",
     "panda-py": "0.2.3"
   },
@@ -102,7 +102,7 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-spec",
         "path": "envelope-format.md",
-        "commit": "dd13dce"
+        "commit": "6d2c079"
       }
     },
     {
@@ -113,7 +113,7 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-spec",
         "path": "vectors/vectors.json",
-        "commit": "dd13dce"
+        "commit": "6d2c079"
       }
     },
     {
@@ -126,7 +126,7 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-php",
         "path": "README.md",
-        "commit": "e2573c8"
+        "commit": "5bbc044"
       }
     },
     {
@@ -139,7 +139,7 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-node",
         "path": "README.md",
-        "commit": "29075f0"
+        "commit": "01ce148"
       }
     },
     {
@@ -152,7 +152,7 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-go",
         "path": "README.md",
-        "commit": "8adad6d"
+        "commit": "5835120"
       }
     },
     {
@@ -165,7 +165,7 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-py",
         "path": "README.md",
-        "commit": "45640c4"
+        "commit": "bd9f2d0"
       }
     }
   ]
