@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "PANDA documentation and validation server for AI coding assistants. Read-only, no network, no keys.",
   "type": "module",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bin": {
     "panda-mcp": "dist/index.js"
   },
@@ -12,7 +12,8 @@
     "dist",
     "docs",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "NOTICE"
   ],
   "engines": {
     "node": ">=20"
