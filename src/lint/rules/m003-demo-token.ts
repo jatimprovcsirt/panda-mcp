@@ -15,7 +15,10 @@
 import { isConfigurationSurface, isDevelopmentPath } from "../config-surface.js";
 import type { Rule, RuleMatch, ScanFile } from "../types.js";
 
-const DEMO_TOKEN = /panda_demo_[a-f0-9]{48}/;
+// 48 or 64, like the format itself (panda-spec/token-format.md). This rule
+// matched 48 only, so a 64-character demo token in a production configuration
+// was exactly the string the rule existed to find and the one it missed.
+const DEMO_TOKEN = /panda_demo_(?:[a-f0-9]{48}|[a-f0-9]{64})\b/;
 
 export const m003DemoToken: Rule = {
   id: "M003",

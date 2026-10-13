@@ -55,3 +55,13 @@ already published.
 Unlike PyPI, npm allows a version to be unpublished and republished. Resist it:
 the fix for a wrong number is a new number, because anything already installed
 from the old one does not change.
+
+## Unreleased — M003 missed the longer demo token
+
+The M003 rule finds the static demo token in a non-development configuration.
+It matched `panda_demo_[a-f0-9]{48}` — 48 only — so a 64-character demo token
+was exactly the string the rule exists to find and the one it could not see.
+The format allows both lengths; see `panda-spec/token-format.md`.
+
+This is the sixth place in the project where a rule held two definitions, and
+the only one where the two copies were a lint rule and the thing it lints.

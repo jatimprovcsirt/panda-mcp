@@ -290,6 +290,14 @@ describe("M003 demo token", () => {
     const root = project({ "config/staging.yaml": `token: ${TOKEN}` });
     expect(rulesFired(root)).toContain("M003");
   });
+
+  it("fires on a 64-character demo token", () => {
+    // The rule matched 48 hex characters only, so the longer demo token the
+    // format also allows was the one string it could not see.
+    const long = "panda_demo_" + "a".repeat(64);
+    const root = project({ "config/production.yaml": `token: ${long}` });
+    expect(rulesFired(root)).toContain("M003");
+  });
 });
 
 describe("M004 personal-data field", () => {
