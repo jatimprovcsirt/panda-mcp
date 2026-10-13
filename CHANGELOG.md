@@ -19,22 +19,39 @@ Before tagging:
 
 ## Released
 
-| Version | Date | What it was |
-|---|---|---|
-| `0.1.0` | 2026-10-09 | First release. Documentation and validation server for AI coding assistants: documentation search, integration scaffolding, and eleven lint rules. Performs no cryptographic operation and holds no key. |
+| Version | Date | Commit | What it was |
+|---|---|---|---|
+| `v0.1.0` | 2026-10-12 | `8507e46` | First release. Documentation and validation server for AI coding assistants: documentation search, integration scaffolding, and eleven lint rules (M001–M011). Performs no cryptographic operation and holds no key. |
 
-## Unresolved: this release has no tag
+## The 0.1.0 tag was added afterwards
 
-`@jatimprovcsirt/panda-mcp@0.1.0` is published to npm. **This repository has no
-tags at all**, so nothing in the git history records that the release happened,
-or which commit it was built from.
+`0.1.0` was published to npm on 2026-10-12 without a tag, so for a day nothing
+in this repository recorded which commit it came from — `npm view` and `git log`
+could not be reconciled.
 
-The practical effect: `npm view @jatimprovcsirt/panda-mcp` and `git log` cannot
-be reconciled. Anyone asking "what code is in 0.1.0?" has to guess from the
-publish date.
+The tag was added retroactively, on `8507e46`. That is not a guess from the
+publish date: **npm records the commit itself**, in the `gitHead` field of the
+published version, and it named `8507e4656c2632f1cdfacec6e5887cb9ee590c72`.
 
-The next release should tag before or alongside publishing. Tagging is not
-optional here — npm has no other link back to a commit, and unlike PyPI it does
-allow a version to be unpublished, so the temptation to correct a mistake by
-re-publishing exists and should be resisted: the fix for a wrong number is a
-new number.
+```
+npm view @jatimprovcsirt/panda-mcp@0.1.0 gitHead
+```
+
+Worth knowing for the next release, and for any release in this repository:
+`gitHead` is only populated when npm publishes from a clean git checkout. It is
+the reason 0.1.0 could be reclaimed at all — and it is not a reason to skip
+tagging, because it only tells you where the code came from *after* you have
+already published.
+
+## Releasing
+
+1. **Read this file.** It records what has been released and what the next
+   number is.
+2. Tag **before** publishing, not after. `npm publish` from a clean checkout
+   records `gitHead`, but that is a recovery path, not a process.
+3. Confirm: `npm view @jatimprovcsirt/panda-mcp version` and `git log` should
+   name the same commit.
+
+Unlike PyPI, npm allows a version to be unpublished and republished. Resist it:
+the fix for a wrong number is a new number, because anything already installed
+from the old one does not change.
