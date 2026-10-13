@@ -5,6 +5,10 @@
     "type": "git",
     "url": "git+https://github.com/jatimprovcsirt/panda-mcp.git"
   },
+  "homepage": "https://panda.jatimprovcsirt.go.id",
+  "bugs": {
+    "url": "https://github.com/jatimprovcsirt/panda-mcp/issues"
+  },
   "description": "PANDA documentation and validation server for AI coding assistants. Read-only, no network, no keys.",
   "type": "module",
   "license": "Apache-2.0",
