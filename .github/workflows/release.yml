@@ -99,7 +99,20 @@ jobs:
             console.log("installed package exposes " + names.length + " tools, none cryptographic");
           '
 
+      # No NODE_AUTH_TOKEN. Authentication is OIDC: npm exchanges the
+      # workflow's id-token for a short-lived credential scoped to this
+      # repository and this workflow file, which is why `id-token: write`
+      # above is load-bearing rather than incidental.
+      #
+      # A granular access token no longer works for direct publishing here:
+      # as of July 2026 a bypass-2FA token cannot perform account or package
+      # management, and from January 2027 it loses direct publish too, keeping
+      # only `npm stage publish`.
+      #
+      # Setup: npmjs.com -> the package -> Settings -> Trusted publishing ->
+      # GitHub Actions, with organization `jatimprovcsirt`, repository
+      # `panda-mcp`, and workflow filename `release.yml`. Exactly — a mismatch
+      # surfaces at publish time as ENEEDAUTH. A new configuration expires if
+      # it does not complete a publish within 2 days.
       - name: Publish
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
