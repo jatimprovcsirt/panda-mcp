@@ -4,7 +4,7 @@ The README makes five claims. This document explains how to check each one yours
 
 > This server reads files under the project root you configure. It never writes any file. It makes no network requests. It never holds, reads, requests, or has access to an encryption key. It performs no cryptographic operation.
 
-If any claim below does not hold for the version you have, that is a security bug. Please report it — see [`SECURITY.md`](./SECURITY.md).
+If any claim below does not hold for the version you have, that is a security bug. Please report it — see [`SECURITY.md`](../../SECURITY.md).
 
 ---
 
@@ -153,4 +153,4 @@ Neither limitation is a defect in this server. Both are worth stating plainly ra
 
 ## Reporting
 
-If any check above fails on your version, treat it as a security report. See [`SECURITY.md`](./SECURITY.md).
+If any check above fails on your version, treat it as a security report. See [`SECURITY.md`](../../SECURITY.md).

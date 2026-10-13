@@ -21,7 +21,8 @@
     "docs",
     "README.md",
     "LICENSE",
-    "NOTICE"
+    "NOTICE",
+    "SECURITY.md"
   ],
   "engines": {
     "node": ">=20"

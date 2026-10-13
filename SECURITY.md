@@ -2,9 +2,13 @@
 
 ## Reporting a vulnerability
 
-Report security issues privately to **Bidang Persandian dan Keamanan Aplikasi, Dinas Komunikasi dan Informatika Provinsi Jawa Timur**.
+**Do not open a public issue for a security report.**
 
-Do not open a public issue for a security report.
+Email **csirt@jatimprov.go.id**, or use GitHub's private vulnerability reporting
+on this repository (Security tab → *Report a vulnerability*).
+
+This file named the team responsible but gave no way to reach it, which made the
+reporting path a dead end for anyone who read it.
 
 Please include:
 
