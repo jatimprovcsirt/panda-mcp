@@ -49,8 +49,36 @@ copy of it.
 
 | Version | Date | Commit | What it was |
 |---|---|---|---|
-| `v0.1.1` | 2026-10-14 | — | M003 could not see a 64-character demo token; the bundled documentation had gone stale against all four SDKs. Relicensed to Apache-2.0 and published with OIDC instead of a token. |
+| `v0.1.2` | 2026-10-14 | — | Adds the `repository` field. Provenance validation rejects a package whose `repository.url` does not match the repository its workflow ran in. |
+| `v0.1.1` | 2026-10-14 | — | M003 could not see a 64-character demo token; the bundled documentation had gone stale; relicensed to Apache-2.0 and set up for OIDC publishing. **Tagged but never published** — `E422`, no `repository` field. |
 | `v0.1.0` | 2026-10-12 | `8507e46` | First release. Documentation and validation server for AI coding assistants: documentation search, integration scaffolding, and eleven lint rules (M001–M011). Performs no cryptographic operation and holds no key. |
+
+## 0.1.1 was rejected for having no repository field
+
+The tag is there; nothing was published. The workflow signed its provenance
+statement, published it to the transparency log, and then the registry refused
+the upload:
+
+    npm error code E422
+    npm error 422 Unprocessable Entity
+    npm error Error verifying sigstore provenance bundle:
+    npm error   Failed to validate repository information:
+    npm error   package.json: "repository.url" is "", expected to match
+    npm error   "https://github.com/jatimprovcsirt/panda-mcp" from provenance
+
+Provenance is a claim that *this source, in this repository, built this
+artifact*, and npm checks that the package agrees about which repository it
+comes from. `panda-mcp` never had a `repository` field, so it claimed nothing
+and the claim could not be verified.
+
+This only became reachable now: nothing else in the pipeline reads that field,
+and without provenance nothing would have compared it. `panda-node` has had one
+all along, which is the entire difference between the two releases.
+
+`E422` is also worth recognising. The trusted publisher configuration was
+correct throughout — the OIDC exchange succeeded and the provenance statement
+was signed and logged before the registry saw the package at all. A failure
+this late is about the artifact, not the credential.
 
 ## The documentation bundle had gone stale
 
