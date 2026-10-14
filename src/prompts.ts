@@ -26,9 +26,17 @@ import { z } from "zod";
  * The live documentation URL.
  *
  * `csirt.jatimprov.go.id/panda` — the portal is mounted under a path on the
- * existing CSIRT domain, not on its own hostname (portal PRD Section 16/18).
- * An earlier draft of the Docker PRD used `panda.jatimprov.go.id`, which never
- * existed; corrected in both places.
+ * existing CSIRT domain, not on a hostname of its own.
+ *
+ * `panda.jatimprov.go.id` was the portal's **own earlier address**; the portal
+ * moved off it. This comment used to say it "never existed", which was wrong,
+ * and the difference matters: a stale hostname is a config to correct, while a
+ * fictional one is a string to delete. A file still carrying it needs to be
+ * checked, not just tidied.
+ *
+ * `panda-portal/PRDs/004-Portal_PRD-panda.md` still records it as the decision.
+ * That is the portal team's decision log rather than a facts file, so it is
+ * theirs to update — and it now describes a decision that was superseded.
  */
 const DOCS_URL = "https://csirt.jatimprov.go.id/panda/docs";
 
