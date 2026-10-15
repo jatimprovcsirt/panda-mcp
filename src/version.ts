@@ -6,4 +6,4 @@
  * into the published binary. `scripts/check-version.ts` fails the build if
  * this drifts from package.json.
  */
-export const VERSION = "0.1.2";
+export const VERSION = "0.1.3";
