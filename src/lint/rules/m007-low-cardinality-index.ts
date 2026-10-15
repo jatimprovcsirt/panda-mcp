@@ -24,7 +24,7 @@ import type { Rule, RuleMatch, ScanFile } from "../types.js";
  * publishing the value itself.
  *
  * Geographic fields are included because Indonesian administrative divisions
- * are coarse: a province index across one agency's data often narrows a person
+ * are coarse: a province index across one organization's data often narrows a person
  * to a handful of rows.
  */
 const LOW_CARDINALITY_FIELDS: readonly string[] = [

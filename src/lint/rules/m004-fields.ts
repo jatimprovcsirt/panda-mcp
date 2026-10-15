@@ -177,7 +177,7 @@ export function isPersonalDataField(raw: string): boolean {
 //
 // Two known limitations:
 //
-//   1. It is Indonesian-centric. Agencies with regional naming conventions, or
+//   1. It is Indonesian-centric. Organizations with regional naming conventions, or
 //      with English-language schemas, will need additions.
 //
 //   2. Some entries are broad. `nama`, `alamat`, and `pekerjaan` are extremely

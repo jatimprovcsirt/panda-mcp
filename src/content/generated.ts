@@ -7,7 +7,7 @@
 import type { ContentBundle } from "./types.js";
 
 export const content: ContentBundle = {
-  "generatedAt": "2026-10-15T08:16:18.189Z",
+  "generatedAt": "2026-10-15T08:20:12.055Z",
   "sdkVersions": {
     "panda-docs": "unknown",
     "panda-spec": "5",
@@ -98,11 +98,11 @@ export const content: ContentBundle = {
       "slug": "envelope-format",
       "title": "Envelope (Wire) Format",
       "stacks": [],
-      "body": "# PANDA Envelope Format (v1)\n\nThis document describes the canonical wire format for encrypted personal data fields in the PANDA SDK.\n\n## Structure\n\nAll encrypted fields are stored as a JSON object (serialized to string) with the following structure:\n\n```json\n{\n  \"v\": 1,\n  \"alg\": \"aes-256-gcm\",\n  \"kid\": \"opd-dukcapil-key-1\",\n  \"nonce\": \"<base64 encoded 12 bytes>\",\n  \"ciphertext\": \"<base64 encoded (ciphertext + 16-byte authentication tag concatenated)>\"\n}\n```\n\n## Fields\n\n| Field | Type | Description |\n|---|---|---|\n| `v` | integer | Envelope version. Must be `1` for this specification version. |\n| `alg` | string | Cipher algorithm. Must be `\"aes-256-gcm\"`. |\n| `kid` | string | Key identifier, matching `^[a-zA-Z0-9._-]+$`. Max 255 bytes. |\n| `nonce` | string | RFC 4648 §4 standard base64 encoded 12-byte initialization vector (IV). |\n| `ciphertext` | string | RFC 4648 §4 standard base64 encoded concatenated byte array: `AES-GCM-Ciphertext ‖ 16-byte GCM Tag`. |\n",
+      "body": "# PANDA Envelope Format (v1)\n\nThis document describes the canonical wire format for encrypted personal data fields in the PANDA SDK.\n\n## Structure\n\nAll encrypted fields are stored as a JSON object (serialized to string) with the following structure:\n\n```json\n{\n  \"v\": 1,\n  \"alg\": \"aes-256-gcm\",\n  \"kid\": \"nik-key-1\",\n  \"nonce\": \"<base64 encoded 12 bytes>\",\n  \"ciphertext\": \"<base64 encoded (ciphertext + 16-byte authentication tag concatenated)>\"\n}\n```\n\n## Fields\n\n| Field | Type | Description |\n|---|---|---|\n| `v` | integer | Envelope version. Must be `1` for this specification version. |\n| `alg` | string | Cipher algorithm. Must be `\"aes-256-gcm\"`. |\n| `kid` | string | Key identifier, matching `^[a-zA-Z0-9._-]+$`. Max 255 bytes. |\n| `nonce` | string | RFC 4648 §4 standard base64 encoded 12-byte initialization vector (IV). |\n| `ciphertext` | string | RFC 4648 §4 standard base64 encoded concatenated byte array: `AES-GCM-Ciphertext ‖ 16-byte GCM Tag`. |\n",
       "source": {
         "repo": "panda-spec",
         "path": "envelope-format.md",
-        "commit": "2a5f2d4"
+        "commit": "abc183d"
       }
     },
     {
@@ -113,7 +113,7 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-spec",
         "path": "vectors/vectors.json",
-        "commit": "2a5f2d4"
+        "commit": "abc183d"
       }
     },
     {
@@ -126,7 +126,7 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-php",
         "path": "README.md",
-        "commit": "6acbe1f"
+        "commit": "cd9b0ee"
       }
     },
     {
@@ -139,7 +139,7 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-node",
         "path": "README.md",
-        "commit": "50d0e5e"
+        "commit": "89f72b7"
       }
     },
     {
@@ -152,7 +152,7 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-go",
         "path": "README.md",
-        "commit": "53bbaed"
+        "commit": "27cefc1"
       }
     },
     {
@@ -165,7 +165,7 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-py",
         "path": "README.md",
-        "commit": "5b73b16"
+        "commit": "a7b12d1"
       }
     }
   ]

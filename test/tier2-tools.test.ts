@@ -99,7 +99,7 @@ describe("explain_envelope", () => {
   const valid = JSON.stringify({
     v: 1,
     alg: "aes-256-gcm",
-    kid: "opd-dukcapil-key-1",
+    kid: "nik-key-1",
     nonce: Buffer.alloc(12, 1).toString("base64"),
     ciphertext: Buffer.alloc(42, 2).toString("base64"),
   });
@@ -111,7 +111,7 @@ describe("explain_envelope", () => {
     );
 
     expect(body).toMatch(/well-formed/i);
-    expect(body).toContain("opd-dukcapil-key-1");
+    expect(body).toContain("nik-key-1");
     expect(body).toContain("26 bytes"); // 42 - 16 tag
   });
 

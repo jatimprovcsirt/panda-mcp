@@ -64,7 +64,7 @@ function request(stack: Stack, overrides: Partial<ScaffoldRequest> = {}): Scaffo
   return {
     stack,
     keyProvider: "local",
-    kid: "opd-key-1",
+    kid: "nik-key-1",
     entity: "citizens",
     fields: [
       { name: "nik", searchable: true },
