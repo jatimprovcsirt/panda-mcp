@@ -49,9 +49,30 @@ copy of it.
 
 | Version | Date | Commit | What it was |
 |---|---|---|---|
+| `v0.1.3` | 2026-10-15 | — | Rebuilt bundle: the terminology moved in the documents it bundles. |
 | `v0.1.2` | 2026-10-14 | — | Adds the `repository` field. Provenance validation rejects a package whose `repository.url` does not match the repository its workflow ran in. |
 | `v0.1.1` | 2026-10-14 | — | M003 could not see a 64-character demo token; the bundled documentation had gone stale; relicensed to Apache-2.0 and set up for OIDC publishing. **Tagged but never published** — `E422`, no `repository` field. |
 | `v0.1.0` | 2026-10-12 | `8507e46` | First release. Documentation and validation server for AI coding assistants: documentation search, integration scaffolding, and eleven lint rules (M001–M011). Performs no cryptographic operation and holds no key. |
+
+## What 0.1.3 carries
+
+The bundle is generated from the sibling repositories, so when their prose
+changes this package goes stale without a line of its own changing. That is
+what happened, and this is the rebuild.
+
+Two edits reached the documents it bundles:
+
+  * The portal and the specs now say **organization** where they said
+    "agency". In English the word leans commercial, and the project's own
+    pages had already settled on "organization" — the registration form has
+    said it eight times over.
+  * The example key identifiers in the SDK READMEs stopped carrying Indonesian
+    administrative abbreviations. `opd-dukcapil-key-1` was the one a reader
+    copied into their own `.env`, as `PANDA_KEY_OPD_DUKCAPIL_KEY_1`.
+
+`check:content` is what makes this visible: it fails when the bundle no longer
+matches the documents, so a stale bundle is a red build rather than a slow
+drift nobody dates.
 
 ## 0.1.1 was rejected for having no repository field
 

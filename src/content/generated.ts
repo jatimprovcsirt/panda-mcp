@@ -7,11 +7,11 @@
 import type { ContentBundle } from "./types.js";
 
 export const content: ContentBundle = {
-  "generatedAt": "2026-10-15T08:20:12.055Z",
+  "generatedAt": "2026-10-15T16:28:14.068Z",
   "sdkVersions": {
     "panda-docs": "unknown",
     "panda-spec": "5",
-    "panda-php": "0.2.5",
+    "panda-php": "0.2.6",
     "panda-node": "0.5.7",
     "panda-go": "0.5.4",
     "panda-py": "0.2.9"
@@ -126,7 +126,7 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-php",
         "path": "README.md",
-        "commit": "cd9b0ee"
+        "commit": "20d4bdd"
       }
     },
     {
@@ -139,7 +139,7 @@ export const content: ContentBundle = {
       "source": {
         "repo": "panda-node",
         "path": "README.md",
-        "commit": "89f72b7"
+        "commit": "a2037ea"
       }
     },
     {
