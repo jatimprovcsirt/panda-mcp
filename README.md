@@ -146,5 +146,5 @@ attribution.
 
 Previously MIT. Apache-2.0 is equally permissive and adds an express patent
 grant and a trademark clause, which MIT is silent on — it matters here because
-this is cryptographic software that other agencies and vendors are expected to
+this is cryptographic software that other organizations and vendors are expected to
 embed in their own systems.
